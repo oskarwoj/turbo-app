@@ -1,22 +1,10 @@
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
-import pkg from 'pg';
-import { z } from 'zod';
+import 'dotenv/config';
 
-const { Pool } = pkg;
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
-let cachedDb: NodePgDatabase | null = null;
+const connectionString = process.env.DATABASE_URL!;
 
-export const getDb = (): NodePgDatabase => {
-  if (cachedDb) return cachedDb;
-
-  const Env = z.object({ DATABASE_URL: z.string().url() });
-  const { DATABASE_URL } = Env.parse(process.env);
-
-  const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-
-  cachedDb = drizzle(pool);
-  return cachedDb;
-};
+// Disable prefetch as it is not supported for "Transaction" pool mode
+export const client = postgres(connectionString, { prepare: false });
+export const db = drizzle(client);

@@ -1,8 +1,7 @@
-import { getDb, users } from '@packages/db';
+import { db, users } from '@packages/db';
 import { CreateUserInput } from '@packages/validators';
 import cors from 'cors';
 import 'dotenv/config';
-import { eq } from 'drizzle-orm';
 import express from 'express';
 import helmet from 'helmet';
 import { z } from 'zod';
@@ -26,9 +25,9 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/users', validate(CreateUserInput), async (req, res, next) => {
   try {
-    const db = getDb();
     // @ts-expect-error from middleware
     const body: z.infer<typeof CreateUserInput> = req.valid;
+    console.log('body', body);
     const [row] = await db
       .insert(users)
       .values({ email: body.email, name: body.name ?? null })
@@ -39,13 +38,10 @@ app.post('/users', validate(CreateUserInput), async (req, res, next) => {
   }
 });
 
-app.get('/users/:id', async (req, res, next) => {
+app.get('/users', async (req, res, next) => {
   try {
-    const db = getDb();
-    const id = req.params?.id;
-    const [row] = await db.select().from(users).where(eq(users.id, id));
-    if (!row) return res.status(404).end();
-    res.json(row);
+    const allUsers = await db.select().from(users);
+    res.json(allUsers);
   } catch (err) {
     next(err);
   }
