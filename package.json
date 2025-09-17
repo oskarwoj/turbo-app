@@ -17,7 +17,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "changeset": "changeset",
-    "version-packages": "changeset version && npm install --no-fund --no-audit"
+    "version-packages": "changeset version && npm install --no-fund --no-audit",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/cli": "2.29.7",
@@ -25,6 +26,8 @@
     "eslint": "9.35.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
     "prettier": "3.6.2",
     "tsx": "4.20.5",
     "turbo": "2.5.6",
@@ -34,5 +37,13 @@
   },
   "dependencies": {
     "postgres": "^3.4.7"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings=0 --fix"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   }
 }
