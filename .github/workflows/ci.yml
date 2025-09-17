@@ -62,7 +62,7 @@ jobs:
         run: npm run typecheck
 
       - name: Lint (fail on warnings)
-        run: npm run lint -- --max-warnings=0
+        run: npm run lint -- -- --max-warnings=0
 
       - name: Build
         run: npm run build
