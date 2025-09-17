@@ -5,14 +5,12 @@ import 'dotenv/config';
 import { eq } from 'drizzle-orm';
 import express from 'express';
 import helmet from 'helmet';
-import pino from 'pino-http';
 import { z } from 'zod';
 
 const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use(pino());
 
 const validate =
   <T extends z.ZodTypeAny>(schema: T) =>
@@ -53,12 +51,10 @@ app.get('/users/:id', async (req, res, next) => {
   }
 });
 
-app.use(
-  (err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    const message = (err as Error)?.message ?? 'Internal Error';
-    res.status(500).json({ message });
-  },
-);
+app.use((err: unknown, _req: express.Request, res: express.Response) => {
+  const message = (err as Error)?.message ?? 'Internal Error';
+  res.status(500).json({ message });
+});
 
 const port = Number(process.env.PORT ?? 3000);
 app.listen(port, () => {
