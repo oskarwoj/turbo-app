@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: turbo-api
+    env: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: npm ci && npm run -w @apps/api build
+    startCommand: npm run -w @apps/api start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATABASE_URL
+        sync: false
