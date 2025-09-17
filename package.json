@@ -2,9 +2,14 @@
   "name": "turbo-app",
   "private": true,
   "type": "module",
-  "packageManager": "npm@10",
-  "engines": { "node": ">=22" },
-  "workspaces": ["apps/*", "packages/*"],
+  "packageManager": "npm@11.6.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
