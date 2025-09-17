@@ -20,8 +20,6 @@ export default function App() {
     },
   });
 
-  console.log('users', users);
-
   return (
     <div className="p-6">
       <Button variant="default">Turbo App</Button>
