@@ -1,0 +1,36 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Database: Drizzle migrations (Supabase Postgres)
+
+Use Drizzle Kit migrations from `packages/db` targeting a Supabase-hosted Postgres.
+
+## Creating migrations
+
+- Define schema changes in `packages/db/src/schema.ts`.
+- From `packages/db`, run:
+
+```bash
+npm run db:generate
+# or push directly
+npm run db:push
+```
+
+`drizzle-kit` will generate SQL in `packages/db/drizzle/` which can be applied to Supabase via `DATABASE_URL`.
+
+## SQL and security guidelines
+
+- Prefer evolving schema via Drizzle schema first; avoid hand-writing SQL unless necessary.
+- New tables must enable RLS and define explicit policies if accessed from clients. If only the API touches the table, RLS can be restrictive (API runs with service role if applicable).
+- For hand-written SQL, include:
+  - Header with purpose, affected objects, and rollback considerations.
+  - Lowercase SQL and generous comments for destructive operations.
+  - Separate policies per operation (`select`, `insert`, `update`, `delete`) and role (`anon`, `authenticated`) when client-facing.
+
+## Environment
+
+- `DATABASE_URL` must point to your Supabase Postgres instance.
+- Transactions should be used for multi-step destructive changes.

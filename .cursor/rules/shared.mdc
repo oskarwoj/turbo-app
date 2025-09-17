@@ -1,0 +1,65 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# AI Rules for {app-name}
+
+{project-description}
+
+## Tech Stack
+
+- TypeScript 5
+- React 19 + Vite
+- Tailwind CSS 4 + shadcn/ui
+- Express 5 (API)
+- PostgreSQL on Supabase + Drizzle ORM
+- Turbo, ESLint, Prettier, Vitest
+
+## Project Structure
+
+When introducing changes to the project, always follow the monorepo structure below (see `CLAUDE.md` for details):
+
+- `apps/web` — React frontend (Vite)
+- `apps/api` — Express.js API server
+- `packages/db` — Drizzle schema and client (requires `DATABASE_URL`)
+- `packages/validators` — Zod schemas shared across apps
+
+When modifying the directory structure, always update this section.
+
+## Conventions
+
+- Node >=22, npm@11.6.0 (locked). Use npm workspaces.
+- Environment:
+  - API: `process.env`
+  - Web: `import.meta.env`
+  - Required: `DATABASE_URL` (Postgres/Supabase), optional `PORT` (API)
+- Imports:
+  - API uses `@packages/db` and `@packages/validators`
+  - Web uses `@/` alias from `apps/web/tsconfig.json`
+- Data access:
+  - Use Drizzle (`@packages/db`) for all database operations
+  - Do not use `@supabase/supabase-js` for database queries on the API
+- Validation:
+  - Use Zod DTOs from `@packages/validators` at API boundaries
+  - Return 400 with `.format()` on validation failure
+- Error handling:
+  - Use centralized Express error middleware
+  - Fail fast with guard clauses and early returns
+- Testing: Vitest; API tests can use Supertest
+- Linting/formatting: 0 ESLint warnings tolerated; run via root scripts
+
+## Coding practices
+
+### Guidelines for clean code
+
+- Use feedback from linters to improve the code when making changes.
+- Prioritize error handling and edge cases.
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deeply nested if statements.
+- Place the happy path last in the function for improved readability.
+- Avoid unnecessary else statements; use if-return pattern instead.
+- Use guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Consider using custom error types or error factories for consistent error handling.

@@ -1,0 +1,93 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Express + Supabase + Drizzle Initialization
+
+This guide sets up the API (`apps/api`) to use Express with Drizzle ORM against Supabase Postgres. Use Supabase JS only if you need Auth/JWT verification; do not use it for database queries in the API.
+
+## Prerequisites
+
+- Node >= 22, npm workspaces
+- `DATABASE_URL` set to your Supabase Postgres connection string
+- Packages: `drizzle-orm`, `postgres` (root), `express`, `helmet`, `cors`, `zod`, `dotenv`
+
+## Drizzle client (packages/db)
+
+`packages/db/src/client.ts` already provides a configured client:
+
+```ts
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+
+const connectionString = process.env.DATABASE_URL!;
+export const client = postgres(connectionString, { prepare: false });
+export const db = drizzle(client);
+```
+
+Define schema in `packages/db/src/schema.ts` and export via `packages/db/src/index.ts`.
+
+## Express app (apps/api)
+
+Minimal API in `apps/api/src/index.ts`:
+
+```ts
+import cors from 'cors';
+import 'dotenv/config';
+import express from 'express';
+import helmet from 'helmet';
+import { z } from 'zod';
+import { db, users } from '@packages/db';
+import { CreateUserInput } from '@packages/validators';
+
+const app = express();
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+const validate =
+  <T extends z.ZodTypeAny>(schema: T) =>
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json(parsed.error.format());
+    // @ts-expect-error attach parsed
+    req.valid = parsed.data;
+    next();
+  };
+
+app.get('/health', (_req, res) => res.json({ ok: true }));
+
+app.post('/users', validate(CreateUserInput), async (req, res, next) => {
+  try {
+    // @ts-expect-error from middleware
+    const body: z.infer<typeof CreateUserInput> = req.valid;
+    const [row] = await db
+      .insert(users)
+      .values({ email: body.email, name: body.name ?? null })
+      .returning();
+    res.status(201).json(row);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.use((err: unknown, _req: express.Request, res: express.Response) => {
+  const message = (err as Error)?.message ?? 'Internal Error';
+  res.status(500).json({ message });
+});
+
+const port = Number(process.env.PORT ?? 3000);
+app.listen(port, () => console.log(`API listening on :${port}`));
+```
+
+## Environment
+
+- API reads `process.env.DATABASE_URL` and optional `PORT`.
+- Web reads `import.meta.env` via Vite.
+
+## Migration workflow
+
+- Edit `packages/db/src/schema.ts`
+- From `packages/db` run `npm run db:generate` or `npm run db:push`

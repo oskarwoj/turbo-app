@@ -1,0 +1,36 @@
+---
+description:
+globs: apps/api/**/*.ts
+alwaysApply: false
+---
+
+### Backend (Express) and Database
+
+- Use Express 5 in `apps/api` with Helmet, CORS, and JSON parsing.
+- Validate request bodies with Zod schemas from `@packages/validators` using a small middleware.
+- Use Drizzle ORM from `@packages/db` for all Postgres access. Do not use `@supabase/supabase-js` for DB queries in the API.
+- Environment variables: `DATABASE_URL` is required; `PORT` optional (defaults to 3000).
+- Error handling: central error middleware must return `{ message }` and 500 by default.
+- Log validation errors as 400 with `zodError.format()`.
+- If Supabase Auth is needed, integrate via JWT verification layer; still perform data access via Drizzle.
+
+Example patterns (see `apps/api/src/index.ts`):
+
+```ts
+// zod validation middleware
+const validate =
+  <T extends z.ZodTypeAny>(schema: T) =>
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json(parsed.error.format());
+    // @ts-expect-error attach parsed
+    req.valid = parsed.data;
+    next();
+  };
+
+// drizzle usage
+const [row] = await db
+  .insert(users)
+  .values({ email, name: name ?? null })
+  .returning();
+```
