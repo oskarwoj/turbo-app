@@ -27,7 +27,7 @@ app.post('/users', validate(CreateUserInput), async (req, res, next) => {
   try {
     // @ts-expect-error from middleware
     const body: z.infer<typeof CreateUserInput> = req.valid;
-    console.log('body', body);
+
     const [row] = await db
       .insert(users)
       .values({ email: body.email, name: body.name ?? null })

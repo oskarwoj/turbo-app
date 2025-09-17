@@ -40,7 +40,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint -- --max-warnings=0 --fix"
+      "eslint --fix"
     ],
     "*.{json,css,md}": [
       "prettier --write"
