@@ -17,3 +17,6 @@ dist/
 
 .claude
 CLAUDE.md
+AGENTS.md
+
+.docs/
