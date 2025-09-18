@@ -1,30 +1,49 @@
 import { Button } from '@/components/ui/button';
+import { fetchJson } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 
 export default function App() {
-  const { data } = useQuery({
+  const {
+    data: health,
+    isLoading: isHealthLoading,
+    error: healthError,
+  } = useQuery({
     queryKey: ['health'],
-    queryFn: async () => {
-      const base = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${base}/health`);
-      return res.json();
-    },
+    queryFn: () => fetchJson('/health'),
   });
 
-  const { data: users } = useQuery({
+  const {
+    data: users,
+    isLoading: isUsersLoading,
+    error: usersError,
+  } = useQuery({
     queryKey: ['users'],
-    queryFn: async () => {
-      const base = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${base}/users`);
-      return res.json();
-    },
+    queryFn: () => fetchJson('/users'),
   });
 
   return (
     <div className="p-6">
       <Button variant="default">Turbo App</Button>
-      <pre className="mt-4 text-sm">{JSON.stringify(data ?? {}, null, 2)}</pre>
-      <pre className="mt-4 text-sm">{JSON.stringify(users ?? {}, null, 2)}</pre>
+      <section className="mt-4">
+        <h2 className="font-semibold">Health</h2>
+        {isHealthLoading ? (
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        ) : healthError ? (
+          <p className="text-sm text-red-600">{(healthError as Error).message}</p>
+        ) : (
+          <pre className="mt-2 text-sm">{JSON.stringify(health ?? {}, null, 2)}</pre>
+        )}
+      </section>
+      <section className="mt-6">
+        <h2 className="font-semibold">Users</h2>
+        {isUsersLoading ? (
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        ) : usersError ? (
+          <p className="text-sm text-red-600">{(usersError as Error).message}</p>
+        ) : (
+          <pre className="mt-2 text-sm">{JSON.stringify(users ?? {}, null, 2)}</pre>
+        )}
+      </section>
     </div>
   );
 }

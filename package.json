@@ -16,6 +16,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "format": "prettier --write .",
     "changeset": "changeset",
     "version-packages": "changeset version && npm install --no-fund --no-audit",
     "prepare": "husky"
@@ -40,7 +41,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix"
+      "eslint --fix",
+      "prettier --write"
     ],
     "*.{json,css,md}": [
       "prettier --write"
