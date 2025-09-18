@@ -51,7 +51,7 @@ This file is enforced by Cursor for every AI action in this repo. Keep `AGENTS.m
 - Error handling:
   - Use centralized Express error middleware
   - Fail fast with guard clauses and early returns
-- Testing: Vitest; API tests can use Supertest
+- Testing: Vitest
 - Linting/formatting: 0 ESLint warnings tolerated; run via root scripts
 
 - Language style: prefer optional chaining (?.) and nullish coalescing (??).
