@@ -1,12 +1,12 @@
 ---
-description:
+description: Shared Cursor rules for the turbo-app monorepo. Complements AGENTS.md and is always applied.
 globs:
 alwaysApply: true
 ---
 
-# AI Rules for {app-name}
+# AI Rules for turbo-app
 
-{project-description}
+Turbo monorepo: React 19 + Vite + Tailwind CSS 4 + shadcn/ui; Express 5 (API); PostgreSQL (Supabase) with Drizzle ORM; Turbo, ESLint, Prettier, Vitest.
 
 ## Tech Stack
 
@@ -27,6 +27,10 @@ When introducing changes to the project, always follow the monorepo structure be
 - `packages/validators` — Zod schemas shared across apps
 
 When modifying the directory structure, always update this section.
+
+## Using this with AGENTS.md
+
+This file is enforced by Cursor for every AI action in this repo. Keep `AGENTS.md` (architecture, workflows, commands) and this rule file (standards and constraints) in sync. When conflicts arise, this rule file takes precedence; update both when changing conventions.
 
 ## Conventions
 
@@ -49,6 +53,9 @@ When modifying the directory structure, always update this section.
   - Fail fast with guard clauses and early returns
 - Testing: Vitest; API tests can use Supertest
 - Linting/formatting: 0 ESLint warnings tolerated; run via root scripts
+
+- Language style: prefer optional chaining (?.) and nullish coalescing (??).
+- Avoid logging secrets or credentials in any environment.
 
 ## Coding practices
 
